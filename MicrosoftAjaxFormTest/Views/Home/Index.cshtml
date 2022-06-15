@@ -1,0 +1,62 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@section scripts{
+    <!--原始版本 X-Requested-With = XMLHttpRequest 会添加到header 和 form表单中-->
+    <!--<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>-->
+
+    <!--fang 修改版 X-Requested-With = XMLHttpRequest 只添加到header中-->
+    <script src="~/Scripts/jquery.unobtrusive-ajax-fang.js"></script>
+    <script type="text/javascript">
+        function ajaxBegin() {
+            console.log("ajaxBegin");
+        }
+        function rightAjaxSuccess(data) {
+            $("#rightContent").append(data.data);
+            console.log("rightAjaxSuccess");
+        }
+
+        function ajaxComplete() {
+            console.log("ajaxComplete");
+        }
+
+        function ajaxFailure() {
+            console.log("ajaxFailure");
+        }
+
+        $(function () {
+            $("#test").click(function () {
+                $("#right_form").submit();
+            });
+        })
+    </script>
+}
+
+
+@{
+    using (this.Ajax.BeginForm("Test", "Home", null,
+        new AjaxOptions()
+        {
+            HttpMethod = "post",
+            InsertionMode = InsertionMode.Replace,
+            UpdateTargetId = "rightContent",
+            OnBegin = "ajaxBegin",
+            OnSuccess = "rightAjaxSuccess",
+            OnFailure = "ajaxFailure",
+            OnComplete = "ajaxComplete"
+        },
+        new { id = "right_form" }))
+    {
+        <input type="hidden" name="test" value="123" />
+        <input id="test" type="button" value="test" />
+
+
+    }
+}
+<p>
+    jquery.unobtrusive-ajax post X-Requested-With 参数 in form 表单
+</p>
+<div id="rightContent">
+    origin content
+</div>
+
